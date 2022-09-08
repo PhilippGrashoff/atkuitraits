@@ -2,42 +2,41 @@
 
 namespace atkuitraits;
 
+use Atk4\Data\ValidationException;
 use atk4\ui\JsToast;
+use Throwable;
+use traitsforatkdata\UserException;
 
 /**
- * usually added to app. Data layer can add messages to app which ui or other
- * can pick up and display
+ * This class can for example added to the single App instance. This way, any Views within the render tree can add
+ * (small) Messages. These can be output as e.g. as Toasts both in full page rendering as well as in JS requests.
  */
-trait UserMessageTrait
+class UserMessages
 {
 
-    public $userMessages = [];
+    protected array $messages = [];
+    public string $defaultTextTechError = 'Ein technischer Fehler ist aufgetreten. Bitte versuche es erneut. Der Administrator wurde informiert.';
 
 
-    /*
-     * This works as message storage. Data level can add messages here as well as
-     * Ui. Ui can pick these messages and display to user
-     */
-    public function addUserMessage(string $message, string $class = '', int $displayTime = null)
+    public function addMessage(string $message, string $class = '', int $displayTime = null)
     {
-        $this->userMessages[] = ['message' => $message, 'class' => $class, 'displayTime' => $displayTime];
+        $this->messages[] = ['message' => $message, 'class' => $class, 'displayTime' => $displayTime];
     }
 
-
-    /*
+    /**
      * renders messages as HTML.
-     * Default is that FUI's .ui.message is used. If $inline is set to true,
+     * Default is that FUI's .ui.message is used.
+     * If $inline is set to true,
      * it will use inline styling, e.g. for an Email where FUI CSS is not
      * available.
      */
-    public function getUserMessagesAsHTML(bool $inline = false): string
+    public function getAsHtml(bool $inline = false): string
     {
         $return = '';
-        foreach ($this->userMessages as $message) {
+        foreach ($this->messages as $message) {
             if ($inline) {
-                $return .= '<div style="color:#' . $this->_getColorForUserMessageClass(
-                        $message['class']
-                    ) . '">' . $message['message'] . '</div>';
+                $return .= '<div style="color:'
+                    . $this->_getColorForUserMessageClass($message['class']) . '">' . $message['message'] . '</div>';
             } else {
                 $return .= '<div class="ui message ' . $message['class'] . '">' . $message['message'] . '</div>';
             }
@@ -47,15 +46,14 @@ trait UserMessageTrait
     }
 
 
-    /*
-     * returns the messages as an array of jsExpressions opening a toast for
-     * each message.
+    /**
+     * returns the messages as an array of jsExpressions opening a toast for each message.
      * Usable e.g. in Form onSubmit returns
      */
-    public function getUserMessagesAsJsToast(): array
+    public function getAsJsToasts(): array
     {
         $return = [];
-        foreach ($this->userMessages as $message) {
+        foreach ($this->messages as $message) {
             $return[] = new JsToast(
                 [
                     'message' => $message['message'],
@@ -70,8 +68,7 @@ trait UserMessageTrait
         return $return;
     }
 
-
-    /*
+    /**
      * returns html color codes for different message classes for inline styling
      */
     protected function _getColorForUserMessageClass(string $class)
@@ -88,33 +85,31 @@ trait UserMessageTrait
         return '000000';
     }
 
-
-    /*
-     *
+    /**
+     * Handy shortcut to catch an Exception and add it as error user Message
      */
-    public function outputExceptionAsJsNotify(Throwable $e, string $text_before = ''): array
+    public function addException(Throwable $e, string $text_before = ''): void
     {
         $return = [];
-        foreach ($this->outputException($e, $text_before) as $message) {
-            $return[] = $this->failNotify($message);
+        foreach ($this->outputException($e, $text_before) as $messageText) {
+            $this->addMessage($messageText, 'error');
         }
-
-        return $return;
     }
 
-
-    /*
-     *
+    /**
+     * Helper to handle different exception types differently
      */
-    public function outputException(Throwable $e, string $text_before = ''): array
+    protected function outputException(Throwable $e, string $text_before = ''): array
     {
         $return = [];
 
         //ValidationException should render each message
         if ($e instanceof ValidationException) {
             //more than one field has bad value
-            if (isset($e->errors)
-                && is_array($e->errors)) {
+            if (
+                isset($e->errors)
+                && is_array($e->errors)
+            ) {
                 foreach ($e->errors as $error) {
                     $return[] = $text_before . ': ' . $error;
                 }
@@ -123,14 +118,11 @@ trait UserMessageTrait
                 $return[] = $text_before . ': ' . $e->getMessage();
             }
         } //other exception meant for user
-        elseif (
-            $e instanceof UserException
-            || $e instanceof \traitsforatkdata\UserException
-        ) {
+        elseif ($e instanceof UserException) {
             $return[] = $text_before . ': ' . $e->getMessage();
         } //any other Exception renders as technical error
         else {
-            $return[] = $text_before . ': Ein technischer Fehler ist aufgetreten. Bitte versuche es erneut. Der Administrator wurde informiert.';
+            $return[] = $text_before . $this->defaultTextTechError;
         }
 
         return $return;

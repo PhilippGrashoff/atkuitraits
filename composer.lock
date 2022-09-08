@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "09adefe55062566b88ed155e710bac01",
+    "content-hash": "b3fd5c7f94aa496561a732ffde5bb65e",
     "packages": [
         {
             "name": "atk4/core",
@@ -717,6 +717,42 @@
             },
             "abandoned": "mvorisek/atk4-hintable",
             "time": "2021-04-15T15:10:36+00:00"
+        },
+        {
+            "name": "philippgrashoff/traitsforatkdata",
+            "version": "2.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PhilippGrashoff/traitsforatkdata.git",
+                "reference": "25bc5ad71403c462324f5911844f7e82b1fdb633"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PhilippGrashoff/traitsforatkdata/zipball/25bc5ad71403c462324f5911844f7e82b1fdb633",
+                "reference": "25bc5ad71403c462324f5911844f7e82b1fdb633",
+                "shasum": ""
+            },
+            "require": {
+                "atk4/ui": "2.4.*",
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "ext-sodium": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "traitsforatkdata\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "support": {
+                "issues": "https://github.com/PhilippGrashoff/traitsforatkdata/issues",
+                "source": "https://github.com/PhilippGrashoff/traitsforatkdata/tree/2.4.2"
+            },
+            "time": "2022-08-29T20:12:31+00:00"
         },
         {
             "name": "psr/cache",
