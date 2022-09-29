@@ -123,12 +123,13 @@ class UserMessages
     /**
      * Handy shortcut to catch an Exception and add it as error user Message
      */
-    public function addException(Throwable $e, string $textBefore = ''): void
+    public function addException(Throwable $e, string $textBefore = ''): self
     {
-        $return = [];
         foreach ($this->outputException($e, $textBefore) as $messageText) {
             $this->addMessage($messageText, 'error');
         }
+
+        return $this;
     }
 
     /**
