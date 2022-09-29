@@ -3,7 +3,7 @@
 namespace atkuitraits;
 
 use Atk4\Data\ValidationException;
-use atk4\ui\JsToast;
+use Atk4\Ui\JsToast;
 use Throwable;
 use traitsforatkdata\UserException;
 
@@ -88,10 +88,10 @@ class UserMessages
     /**
      * Handy shortcut to catch an Exception and add it as error user Message
      */
-    public function addException(Throwable $e, string $text_before = ''): void
+    public function addException(Throwable $e, string $textBefore = ''): void
     {
         $return = [];
-        foreach ($this->outputException($e, $text_before) as $messageText) {
+        foreach ($this->outputException($e, $textBefore) as $messageText) {
             $this->addMessage($messageText, 'error');
         }
     }
@@ -99,7 +99,7 @@ class UserMessages
     /**
      * Helper to handle different exception types differently
      */
-    protected function outputException(Throwable $e, string $text_before = ''): array
+    protected function outputException(Throwable $e, string $textBefore = ''): array
     {
         $return = [];
 
@@ -111,18 +111,18 @@ class UserMessages
                 && is_array($e->errors)
             ) {
                 foreach ($e->errors as $error) {
-                    $return[] = $text_before . ': ' . $error;
+                    $return[] = $textBefore . ': ' . $error;
                 }
             } //single error
             else {
-                $return[] = $text_before . ': ' . $e->getMessage();
+                $return[] = $textBefore . ': ' . $e->getMessage();
             }
         } //other exception meant for user
         elseif ($e instanceof UserException) {
-            $return[] = $text_before . ': ' . $e->getMessage();
+            $return[] = $textBefore . ': ' . $e->getMessage();
         } //any other Exception renders as technical error
         else {
-            $return[] = $text_before . $this->defaultTextTechError;
+            $return[] = $textBefore . $this->defaultTextTechError;
         }
 
         return $return;
