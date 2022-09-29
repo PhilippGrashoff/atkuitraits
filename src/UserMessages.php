@@ -15,13 +15,33 @@ class UserMessages
 {
 
     protected array $messages = [];
+
+    public $displayTimeSuccess = 3000;
+    public $displayTimeWarning = 8000;
+    public $displayTimeFailure = 10000;
+
     public string $defaultTextTechError = 'Ein technischer Fehler ist aufgetreten. Bitte versuche es erneut. Der Administrator wurde informiert.';
 
 
-    public function addMessage(string $message, string $class = '', int $displayTime = null): self
+    protected function addMessage(string $message, string $class = ''): self
     {
-        $this->messages[] = ['message' => $message, 'class' => $class, 'displayTime' => $displayTime];
+        $this->messages[] = ['message' => $message, 'class' => $class];
         return $this;
+    }
+
+    public function addSuccessMessage(string $message): self
+    {
+        return $this->addMessage($message, 'success');
+    }
+
+    public function addWarningMessage(string $message): self
+    {
+        return $this->addMessage($message, 'warning');
+    }
+
+    public function addErrorMessage(string $message): self
+    {
+        return $this->addMessage($message, 'error');
     }
 
     /**
@@ -61,12 +81,26 @@ class UserMessages
                     'position' => 'bottom right',
                     'class' => $message['class'],
                     'showProgress' => 'bottom',
-                    'displayTime' => $message['displayTime'] ?? ($message['class'] == 'success' ? 3000 : 8000)
+                    'displayTime' => $this->getDisplayTimeForClass($message['class'])
                 ]
             );
         }
 
         return $return;
+    }
+
+    protected function getDisplayTimeForClass(string $class): int
+    {
+        switch ($class) {
+            case "success":
+                return $this->displayTimeSuccess;
+            case "warning":
+                return $this->displayTimeWarning;
+            case "error":
+                return $this->displayTimeFailure;
+        }
+
+        return 3000;
     }
 
     /**

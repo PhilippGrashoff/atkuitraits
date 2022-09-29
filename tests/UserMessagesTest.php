@@ -25,47 +25,21 @@ class UserMessagesTest extends TestCase
     public function testChaining(): void
     {
         $userMessages = new UserMessages();
-        $userMessages->addMessage('1')->addMessage('2');
+        $userMessages->addSuccessMessage('1')->addSuccessMessage('2');
         self::assertSame(2, count($userMessages->getAsJsToasts()));
     }
 
-    public function testAddMessage(): void
+
+    public function testDuration(): void
     {
         $userMessages = new UserMessages();
-        $userMessages->addMessage('TestMessage1', 'success');
-        $userMessages->addMessage('TestMessage2');
-        $userMessages->addMessage('TestMessage3', 'error');
-        $userMessages->addMessage('TestMessage4', 'warning');
-        self::assertEquals(count($userMessages->getAsJsToasts()), 4);
-        self::assertTrue($userMessages->getAsJsToasts()[0] instanceof jsToast);
-        $htmlstring = $userMessages->getAsHtml();
-        self::assertTrue(strpos($htmlstring, 'class="ui message') !== false);
-        $inlinehtml = $userMessages->getAsHtml(true);
-        self::assertTrue(strpos($inlinehtml, 'style="color:') !== false);
-    }
-
-    public function testSetDuration(): void
-    {
-        $userMessages = new UserMessages();
-        $userMessages->addMessage('TestMessage1', 'success', 2000);
+        $userMessages->addSuccessMessage('TestMessage1');
+        $userMessages->addWarningMessage('TestMessage1');
+        $userMessages->addErrorMessage('TestMessage1');
         $res = $userMessages->getAsJsToasts();
-        self::assertEquals(2000, $res[0]->settings['displayTime']);
-
-        $userMessages->addMessage('TestMessage1', 'success', 0);
-        $res = $userMessages->getAsJsToasts();
-        self::assertEquals(0, $res[1]->settings['displayTime']);
-
-        $userMessages->addMessage('TestMessage1', 'success');
-        $res = $userMessages->getAsJsToasts();
-        self::assertEquals(3000, $res[2]->settings['displayTime']);
-
-        $userMessages->addMessage('TestMessage1', 'warning');
-        $res = $userMessages->getAsJsToasts();
-        self::assertEquals(8000, $res[3]->settings['displayTime']);
-
-        $userMessages->addMessage('TestMessage1', 'error');
-        $res = $userMessages->getAsJsToasts();
-        self::assertEquals(8000, $res[4]->settings['displayTime']);
+        self::assertEquals(3000, $res[0]->settings['displayTime']);
+        self::assertEquals(8000, $res[1]->settings['displayTime']);
+        self::assertEquals(10000, $res[2]->settings['displayTime']);
     }
 
     public function testAddExceptionDataException(): void
