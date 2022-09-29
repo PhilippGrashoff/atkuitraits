@@ -25,8 +25,12 @@ class UserMessagesTest extends TestCase
     public function testChaining(): void
     {
         $userMessages = new UserMessages();
-        $userMessages->addSuccessMessage('1')->addSuccessMessage('2');
-        self::assertSame(2, count($userMessages->getAsJsToasts()));
+        $userMessages->addSuccessMessage('1')
+            ->addWarningMessage('2')
+            ->addErrorMessage('3')
+            ->addException(new UserException('lala'))
+            ->addSuccessMessage('5');
+        self::assertSame(5, count($userMessages->getAsJsToasts()));
     }
 
 
