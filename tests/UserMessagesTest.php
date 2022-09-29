@@ -22,6 +22,13 @@ class UserMessagesTest extends TestCase
         $this->app = new AppWithUserMessages();
     }
 
+    public function testChaining(): void
+    {
+        $userMessages = new UserMessages();
+        $userMessages->addMessage('1')->addMessage('2');
+        self::assertSame(2, count($userMessages->getAsJsToasts()));
+    }
+
     public function testAddMessage(): void
     {
         $userMessages = new UserMessages();

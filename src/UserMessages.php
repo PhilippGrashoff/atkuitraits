@@ -18,9 +18,10 @@ class UserMessages
     public string $defaultTextTechError = 'Ein technischer Fehler ist aufgetreten. Bitte versuche es erneut. Der Administrator wurde informiert.';
 
 
-    public function addMessage(string $message, string $class = '', int $displayTime = null)
+    public function addMessage(string $message, string $class = '', int $displayTime = null): self
     {
         $this->messages[] = ['message' => $message, 'class' => $class, 'displayTime' => $displayTime];
+        return $this;
     }
 
     /**
